@@ -7,7 +7,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['email', 'password']
+        fields = ['id','email', 'password']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -18,9 +18,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 
-class EmailVerificationSerializer(serializers.ModelSerializer):
+class UserActivationTokenSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=555)
 
     class Meta:
         model = UserActivationToken
-        fields = ['token']
+        fields = ['datetime','user','token']
+    
+
+    def create(self, validated_data):
+        return UserActivationToken.objects.create_token(**validated_data)

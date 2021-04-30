@@ -32,7 +32,7 @@ AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google', 'email': 'email'}
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_user = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,10 +44,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return str(self.id)
 
 
 class UserActivationToken(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=250)
     datetime = models.DateField(default=timezone.now)  # for token expiration
+
+    def __str__(self):
+        return str(self.token)
+
+    def getUser(self):
+        UserActivationToken = self 
+        user = UserActivationToken.user
+        return str(user)
+
+    def create_token(self, token, datetime,user):
+        UserActivationToken = self
+        UserActivationToken.token = token
+        UserActivationToken.datetime = datetime
+        UserActivationToken.user = User.objects.get(id=user)
+        UserActivationToken.save()
+        
