@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-iw=p)zma$&ck2b^-0kt@4@=y^y)p_mhqy=i#w6qp@au8u4-orz
 DEBUG = True
 
 ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'authentication.User'
+AUTH_USER_MODEL = 'app.User'
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'authentication.apps.AuthenticationConfig',
+    'app.apps.AuthenticationConfig',
 
 ]
 
