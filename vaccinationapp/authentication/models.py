@@ -4,12 +4,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 
 
-
 class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None):
       if email is None:
-          raise TypeError('Please provide an email address')
+          raise TypeError('Provide an email address')
 
       user = self.model(email=self.normalize_email(email))
       user.set_password(password)
@@ -22,7 +21,7 @@ class UserManager(BaseUserManager):
 
       user = self.create_user(email, password)
       user.is_superuser = True
-      user.is_user = True
+      user.is_staff = True
       user.save()
       return user
 
@@ -33,7 +32,7 @@ AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google', 'email': 'email'}
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
     is_active = models.BooleanField(default=False)
-    is_user = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     auth_provider = models.CharField(max_length=255, blank=False, null=False, default=AUTH_PROVIDERS.get('email'))
@@ -45,6 +44,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.id)
+
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return{
+            "refresh": str(refresh),
+            "access": str(refresh.access_token)
+        }
 
 
 class UserActivationToken(models.Model):
