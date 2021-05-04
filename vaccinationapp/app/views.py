@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status
-from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CitySerializer
+from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserActivationToken, City
+from .models import User, UserActivationToken, County
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -65,42 +65,40 @@ class Login(generics.GenericAPIView):
 
 
 
-class CitiesList(APIView):
-
+class CountyList(APIView):
   def get(self,request):
-    cities = City.objects.all()
-    serializer = CitySerializer(cities, many=True)
+    counties  = County.objects.all()
+    serializer = CountySerializer(counties, many=True)
     return Response(serializer.data,  status=status.HTTP_200_OK)
   
   def post(self,request):
-    serializer = CitySerializer(data=request.data)
+    serializer = CountySerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data,  status=status.HTTP_201_CREATED)
     return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UpdateCity(APIView):
-
+class CountyDetails(APIView):
   def get_object(self, pk):
     try:
-      return City.objects.get(pk=pk)
-    except City.DoesNotExist:
+      return County.objects.get(pk=pk)
+    except County.DoesNotExist:
        return Response(status=status.HTTP_404_NOT_FOUND)
 
   def get(self, request, pk):
-    city = self.get_object(pk)
-    serializer = CitySerializer(city)
+    county = self.get_object(pk)
+    serializer = CountySerializer(county)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
   def put(self, request, pk):
-    city = self.get_object(pk)
-    serializer = CitySerializer(city, data=request.data)
+    county = self.get_object(pk)
+    serializer = CountySerializer(county, data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data,  status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   def delete(self, request, pk):
-    city = self.get_object(pk)
-    city.delete()
+    county = self.get_object(pk)
+    county.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)

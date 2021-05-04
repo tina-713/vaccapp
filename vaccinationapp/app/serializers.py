@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken, City
+from .models import User, UserActivationToken, County
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -61,10 +61,22 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 
-class CitySerializer(serializers.ModelSerializer):
+class CountySerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=True, allow_blank=False, max_length=30)
 
     class Meta:
-        model = City
+        model = County
         fields = ['id', 'name']
-        
+
+
+
+# class CountySerializer(serializers.ModelSerializer):
+#     name = serializers.CharField(required=True, allow_blank=False, max_length=50)
+
+#     class Meta:
+#         model = County
+#         fields = ['id', 'name', 'city']
+    
+#     def create(self, validated_data):
+#         return County.objects.create(**validated_data)
+
