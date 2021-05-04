@@ -29,6 +29,7 @@ class UserManager(BaseUserManager):
 AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google', 'email': 'email'}
 
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
     is_active = models.BooleanField(default=False)
@@ -53,6 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
 
 
+
 class UserActivationToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=250)
@@ -72,4 +74,14 @@ class UserActivationToken(models.Model):
         UserActivationToken.datetime = datetime
         UserActivationToken.user = User.objects.get(id=user)
         UserActivationToken.save()
+
+
+
+class City(models.Model):
+    name = models.CharField(max_length=30,blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
         

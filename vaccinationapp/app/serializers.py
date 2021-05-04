@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken
+from .models import User, UserActivationToken, City
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -27,7 +27,6 @@ class UserActivationTokenSerializer(serializers.ModelSerializer):
         model = UserActivationToken
         fields = ['datetime','user','token']
     
-
     def create(self, validated_data):
         return UserActivationToken.objects.create_token(**validated_data)
 
@@ -41,7 +40,6 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'password', 'tokens']
-
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -60,4 +58,13 @@ class LoginSerializer(serializers.ModelSerializer):
         }
 
         return super().validate(attrs)
+
+
+
+class CitySerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=True, allow_blank=False, max_length=30)
+
+    class Meta:
+        model = City
+        fields = ['id', 'name']
         
