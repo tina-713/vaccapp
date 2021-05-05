@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken, County
+from .models import User, UserActivationToken, County, City
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -9,7 +9,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id','email', 'password']
+        fields = [
+            'id',
+            'email', 
+            'password'
+        ]
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -25,7 +29,11 @@ class UserActivationTokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserActivationToken
-        fields = ['datetime','user','token']
+        fields = [
+            'datetime',
+            'user',
+            'token'
+        ]
     
     def create(self, validated_data):
         return UserActivationToken.objects.create_token(**validated_data)
@@ -39,7 +47,11 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'tokens']
+        fields = [
+            'email', 
+            'password', 
+            'tokens'
+        ]
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -61,22 +73,25 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 
+class CitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = City
+        fields = [
+            'id', 
+            'name',
+            'county'
+        ]
+
+
+
 class CountySerializer(serializers.ModelSerializer):
-    name = serializers.CharField(required=True, allow_blank=False, max_length=30)
+    cities = CitySerializer(many=True, read_only=True)
 
     class Meta:
         model = County
-        fields = ['id', 'name']
-
-
-
-# class CountySerializer(serializers.ModelSerializer):
-#     name = serializers.CharField(required=True, allow_blank=False, max_length=50)
-
-#     class Meta:
-#         model = County
-#         fields = ['id', 'name', 'city']
-    
-#     def create(self, validated_data):
-#         return County.objects.create(**validated_data)
-
+        fields = [
+            'id', 
+            'name',
+            'cities'
+        ]

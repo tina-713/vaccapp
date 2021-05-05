@@ -87,23 +87,11 @@ class County(models.Model):
 
 
 
-# class City(models.Model):
-#     city = models.ForeignKey(County, on_delete=models.CASCADE, related_name='city')
-#     name = models.CharField(max_length=50,blank=False, null=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+class City(models.Model):
+    county = models.ForeignKey(County, on_delete=models.CASCADE, related_name='cities')
+    name = models.CharField(max_length=30,blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-#     def __str__(self):
-#         return str(self.name)
-
-    # def getCity(self):
-    #     County = self 
-    #     city = County.city
-    #     return str(city)
-
-    # def create_county(self, name ,city):
-    #     County = self
-    #     County.name = name
-    #     County.city = City.objects.get(id=city)
-    #     County.save()
-        
+    def __str__(self):
+        return str(self.name)
