@@ -95,3 +95,14 @@ class City(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+
+class Vaccine(models.Model):
+    name = models.CharField(max_length=30,blank=False, null=False)
+    booster_days = models.PositiveIntegerField(blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)

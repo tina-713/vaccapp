@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
-from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer
+from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserActivationToken, County, City
+from .models import User, UserActivationToken, County, City, Vaccine
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -142,3 +142,13 @@ class CityDetails(APIView):
     city = self.get_object(pk)
     city.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class VaccineList(APIView):
+  def get(self, request):
+    if request.method == 'GET':
+      vaccine = Vaccine.objects.all()
+      serializer = VaccineSerializer(vaccine, many=True)
+      return Response(serializer.data,  status=status.HTTP_200_OK)
+  
