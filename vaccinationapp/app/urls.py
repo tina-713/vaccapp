@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList
+from .views import RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails
 
 
 urlpatterns = [
@@ -12,4 +12,6 @@ urlpatterns = [
   path('cities/<int:pk>/', CityDetails.as_view()),
   path('vaccine/', VaccineList.as_view(), name="vaccine"),
   path('categories/', CategoryList.as_view(), name="categories"),
+  path('office/', OfficeList.as_view(), name="office"),
+  path('office/<int:pk>/', OfficeDetails.as_view()),
 ]

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken, County, City, Vaccine, Categories
+from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -25,7 +25,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserActivationTokenSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=555)
+    token = serializers.CharField(max_length=555,read_only=True)
 
     class Meta:
         model = UserActivationToken
@@ -73,14 +73,32 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 
+class OfficeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Office
+        fields = [
+            'id',
+            'city',
+            'name', 
+            'addres',
+            'phone',
+            'spots',
+            'vaccine'
+        ]
+
+
+
 class CitySerializer(serializers.ModelSerializer):
+    office = OfficeSerializer(many=True, read_only=True)
 
     class Meta:
         model = City
         fields = [
             'id', 
             'name',
-            'county'
+            'county',
+            'office'
         ]
 
 
@@ -99,13 +117,15 @@ class CountySerializer(serializers.ModelSerializer):
 
 
 class VaccineSerializer(serializers.ModelSerializer):
+    office = OfficeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Vaccine
         fields = [
             'id', 
             'name',
-            'booster_days'
+            'booster_days',
+            'office'
         ]
 
 

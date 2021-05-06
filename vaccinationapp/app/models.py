@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
-
+from django.core.validators import MinLengthValidator
 
 class UserManager(BaseUserManager):
 
@@ -113,6 +113,21 @@ class Categories(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=1000)
     risk_count = models.PositiveIntegerField(blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+
+class Office(models.Model):
+    name = models.CharField(max_length=500)
+    addres = models.CharField(max_length=500)
+    phone =models.CharField('phone', max_length=10, validators=[MinLengthValidator(10)])
+    spots = models.PositiveIntegerField(default=0)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='office')
+    vaccine = models.ForeignKey(Vaccine, on_delete=models.CASCADE, related_name='office')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
