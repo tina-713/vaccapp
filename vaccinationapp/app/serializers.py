@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken, County, City, Vaccine
+from .models import User, UserActivationToken, County, City, Vaccine, Categories
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -106,4 +106,17 @@ class VaccineSerializer(serializers.ModelSerializer):
             'id', 
             'name',
             'booster_days'
+        ]
+
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Categories
+        fields = [
+            'id',
+            'risk_count', 
+            'name',
+            'description'
         ]

@@ -89,7 +89,7 @@ class County(models.Model):
 
 class City(models.Model):
     county = models.ForeignKey(County, on_delete=models.CASCADE, related_name='cities')
-    name = models.CharField(max_length=30,blank=False, null=False)
+    name = models.CharField(max_length=60,blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -101,6 +101,18 @@ class City(models.Model):
 class Vaccine(models.Model):
     name = models.CharField(max_length=30,blank=False, null=False)
     booster_days = models.PositiveIntegerField(blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+
+class Categories(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=1000)
+    risk_count = models.PositiveIntegerField(blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

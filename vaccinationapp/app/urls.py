@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList
+from .views import RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
   path('cities/', CityList.as_view(), name="cities"),
   path('cities/<int:pk>/', CityDetails.as_view()),
   path('vaccine/', VaccineList.as_view(), name="vaccine"),
+  path('categories/', CategoryList.as_view(), name="categories"),
 ]

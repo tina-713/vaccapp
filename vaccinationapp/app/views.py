@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
-from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer
+from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserActivationToken, County, City, Vaccine
+from .models import User, UserActivationToken, County, City, Vaccine, Categories
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -75,7 +75,7 @@ class CountyList(APIView):
     serializer = CountySerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
-      return Response(serializer.data,  status=status.HTTP_201_CREATED)
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CountyDetails(APIView):
@@ -95,7 +95,7 @@ class CountyDetails(APIView):
     serializer = CountySerializer(county, data=request.data)
     if serializer.is_valid():
       serializer.save()
-      return Response(serializer.data,  status=status.HTTP_201_CREATED)
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   def delete(self, request, pk):
@@ -107,16 +107,16 @@ class CountyDetails(APIView):
 
 class CityList(APIView):
   def get(self,request):
-    cities  = City.objects.all()
+    cities = City.objects.all()
     serializer = CitySerializer(cities, many=True)
-    return Response(serializer.data,  status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_200_OK)
   
   def post(self,request):
     serializer = CitySerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
-      return Response(serializer.data,  status=status.HTTP_201_CREATED)
-    return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response (serializer.errors, tatus=status.HTTP_400_BAD_REQUEST)
 
 class CityDetails(APIView):
   def get_object(self, pk):
@@ -135,7 +135,7 @@ class CityDetails(APIView):
     serializer = CitySerializer(city, data=request.data)
     if serializer.is_valid():
       serializer.save()
-      return Response(serializer.data,  status=status.HTTP_201_CREATED)
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   def delete(self, request, pk):
@@ -150,5 +150,15 @@ class VaccineList(APIView):
     if request.method == 'GET':
       vaccine = Vaccine.objects.all()
       serializer = VaccineSerializer(vaccine, many=True)
-      return Response(serializer.data,  status=status.HTTP_200_OK)
+      return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class CategoryList(APIView):
+  
+  def get(self,request):
+    category = Categories.objects.all()
+    serializer = CategorySerializer(category, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+  
   
