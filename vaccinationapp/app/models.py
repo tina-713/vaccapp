@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, MinValueValidator
+from vaccinationapp import settings
 
 class UserManager(BaseUserManager):
 
@@ -105,13 +106,13 @@ class Vaccine(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.id)
 
 
 
 class Categories(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=1000)
+    name = models.CharField(max_length=255, blank=False)
+    description = models.CharField(max_length=1000, blank=False)
     risk_count = models.PositiveIntegerField(blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -122,8 +123,8 @@ class Categories(models.Model):
 
 
 class Office(models.Model):
-    name = models.CharField(max_length=500)
-    addres = models.CharField(max_length=500)
+    name = models.CharField(max_length=500, blank=False)
+    addres = models.CharField(max_length=500, blank=False)
     phone =models.CharField('phone', max_length=10, validators=[MinLengthValidator(10)])
     spots = models.PositiveIntegerField(default=0)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='office')
@@ -133,3 +134,30 @@ class Office(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+
+class Person(models.Model):
+
+    GENDER = (
+        ('M', 'Masculin'),
+        ('F', 'Feminin'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=60, blank=False, null=False) 
+    last_name = models.CharField(max_length=60, blank=False, null=False)
+    cnp =models.CharField('cnp', max_length=13, unique=True, validators=[MinLengthValidator(13)])
+    gender = models.CharField(max_length=1, choices=GENDER)
+    age = models.IntegerField(validators=[MinValueValidator(18)])
+    phone =models.CharField('phone', max_length=10, validators=[MinLengthValidator(10)])
+    email = models.EmailField(max_length=255)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    category = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+
+    def __str__(self):
+        return str(self.name)
+        

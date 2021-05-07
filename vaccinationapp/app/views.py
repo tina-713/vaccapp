@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
-from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer
+from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office
+from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -199,4 +199,44 @@ class OfficeDetails(APIView):
   def delete(self, request, pk):
     office = self.get_object(pk)
     office.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class PersonList(APIView):
+  def get(self,request):
+    person = Person.objects.all()
+    serializer = PersonSerializer(person, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+  
+  def post(self,request):
+    serializer = PersonSerializer(data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PersonDetails(APIView):
+  def get_object(self, pk):
+    try:
+      return Person.objects.get(pk=pk)
+    except Person.DoesNotExist:
+       return Response(status=status.HTTP_404_NOT_FOUND)
+
+  def get(self, request, pk):
+    person = self.get_object(pk)
+    serializer = PersonSerializer(person)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  def put(self, request, pk):
+    person = self.get_object(pk)
+    serializer = PersonSerializer(person, data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def delete(self, request, pk):
+    person = self.get_object(pk)
+    person.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)

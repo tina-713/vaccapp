@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office
+from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -139,4 +139,27 @@ class CategorySerializer(serializers.ModelSerializer):
             'risk_count', 
             'name',
             'description'
+        ]
+
+
+
+class PersonSerializer(serializers.ModelSerializer):
+    # user = serializers.CharField(write_only=True)
+    # city = serializers.CharField(write_only=True)
+    # category = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Person
+        fields = [
+            'user',
+            'id',
+            'name', 
+            'last_name',
+            'cnp',
+            'gender',
+            'age',
+            'phone',
+            'email',
+            'city',
+            'category'
         ]
