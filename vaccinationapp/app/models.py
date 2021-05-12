@@ -183,3 +183,15 @@ class Appointment(models.Model):
         
     def save(self, *args, **kwargs):
         super(Appointment, self).save(*args, **kwargs)
+
+
+
+class Waiting(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    office = models.ForeignKey(Office, on_delete=models.CASCADE)
+    spot = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)

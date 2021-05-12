@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
-from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer
+from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment
+from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -255,3 +255,43 @@ class AppointmentList(APIView):
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class WaitingList(APIView):
+  def get(self,request):
+    waiting = Waiting.objects.all()
+    serializer = WaitingSerializer(waiting, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+  
+  def post(self,request):
+    serializer = WaitingSerializer(data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class WaitingDetails(APIView):
+  def get_object(self, pk):
+    try:
+      return Waiting.objects.get(pk=pk)
+    except Waiting.DoesNotExist:
+       return Response(status=status.HTTP_404_NOT_FOUND)
+
+  def get(self, request, pk):
+    waiting = self.get_object(pk)
+    serializer = WaitingSerializer(waiting)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  def put(self, request, pk):
+    waiting = self.get_object(pk)
+    serializer = WaitingSerializer(waiting, data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def delete(self, request, pk):
+    waiting = self.get_object(pk)
+    waiting.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
