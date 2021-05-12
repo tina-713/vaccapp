@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
-from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer
+from .serializers import RegisterSerializer, UserActivationTokenSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person
+from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -240,3 +240,18 @@ class PersonDetails(APIView):
     person = self.get_object(pk)
     person.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class AppointmentList(APIView):
+  def get(self,request):
+    appointment = Appointment.objects.all()
+    serializer = AppointmentSerializer(appointment, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+  
+  def post(self,request):
+    serializer = AppointmentSerializer(data=request.data, many=True)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)

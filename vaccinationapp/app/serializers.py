@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person
+from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -162,4 +162,17 @@ class PersonSerializer(serializers.ModelSerializer):
             'email',
             'city',
             'category'
+        ]
+
+
+
+class AppointmentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Appointment
+        fields = [
+            'person',
+            'office',
+            'kind', 
+            'date'
         ]

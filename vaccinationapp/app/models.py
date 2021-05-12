@@ -4,6 +4,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from django.core.validators import MinLengthValidator, MinValueValidator
 from vaccinationapp import settings
+import datetime
+
 
 class UserManager(BaseUserManager):
 
@@ -157,7 +159,27 @@ class Person(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return str(self.id)
+
+
+
+class Appointment(models.Model):
+    
+    TYPE = (
+        ('prima doza', 'prima doza'),
+        ('rapel', 'rapel'),
+    )
+
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    office = models.ForeignKey(Office, on_delete=models.CASCADE)
+    kind = models.CharField(max_length=30, choices=TYPE) 
+    date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.id)
         
+    def save(self, *args, **kwargs):
+        super(Appointment, self).save(*args, **kwargs)

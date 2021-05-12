@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails, PersonList, PersonDetails
+from .views import RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails, PersonList, PersonDetails, AppointmentList
 
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
   path('office/<int:pk>/', OfficeDetails.as_view()),
   path('person/', PersonList.as_view(), name="person"),
   path('person/<int:pk>/', PersonDetails.as_view()),
+  path('appointment/', AppointmentList.as_view(), name="appointment"),
 ]
