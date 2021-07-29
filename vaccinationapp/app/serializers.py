@@ -1,8 +1,16 @@
+from django.db.models import expressions
+from django.http import request
+from django.http.response import JsonResponse
 from rest_framework import serializers
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
-
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+from .utils import Util
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=69, min_length=6, write_only=True)
@@ -24,33 +32,35 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 
-class UserActivationTokenSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=555,read_only=True)
+# class UserActivationTokenSerializer(serializers.ModelSerializer):
+#     token = serializers.CharField(max_length=555,read_only=True)
 
-    class Meta:
-        model = UserActivationToken
-        fields = [
-            'datetime',
-            'user',
-            'token'
-        ]
+#     class Meta:
+#         model = UserActivationToken
+#         fields = [
+#             'datetime',
+#             'user',
+#             'token'
+#         ]
     
-    def create(self, validated_data):
-        return UserActivationToken.objects.create_token(**validated_data)
+#     def create(self, validated_data):
+#         return UserActivationToken.objects.create_token(**validated_data)
 
 
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255,min_length=3)
     password = serializers.CharField(max_length=69,min_length=6,write_only=True)
-    tokens = serializers.CharField(max_length=600,read_only=True)
+    refresh = serializers.CharField(max_length=600,read_only=True)
+    access = serializers.CharField(max_length=600,read_only=True)
 
     class Meta:
         model = User
         fields = [
             'email', 
             'password', 
-            'tokens'
+            'refresh',
+            'access'
         ]
 
     def validate(self, attrs):
@@ -58,7 +68,8 @@ class LoginSerializer(serializers.ModelSerializer):
         password = attrs.get('password', '')
 
         user = auth.authenticate(email=email, password=password)
-
+        user.SetTokens()
+        print(user)
         if not user:
             raise AuthenticationFailed('Invalid credentials')
         if not user.is_active:
@@ -66,10 +77,40 @@ class LoginSerializer(serializers.ModelSerializer):
         
         return{
             'email': user.email,
-            'tokens': user.tokens
+            'refresh': user.refresh,
+            'access': user.access
         }
 
         return super().validate(attrs)
+
+
+
+class ResetPasswordEmailRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(min_length=2)
+
+    redirect_url = serializers.CharField(max_length=500, required=False)
+
+    class Meta:
+        fields = ['email']
+
+    def validate(self, attrs):
+            email = attrs['data'].get('email', '')
+            if User.objects.filter(email=email).exists():
+                user = User.objects.get(email=email)
+                uibd64=urlsafe_base64_encode(user.id)
+                token=PasswordResetTokenGenerator().make_token(user)
+                current_site = get_current_site(request=attrs['data'].get(request)).domain
+                relativeLink = reverse('password-reset-confirm', kwargs={'uibd64':uibd64, 'token':token})   
+   
+                absurl = 'http://'+current_site+relativeLink
+                email_body = ' Use the link below to reset your password \n' + absurl
+                data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Reset your password'}
+  
+                Util.send_email(data)
+
+                return attrs
+            return super().validate(attrs)
+
 
 
 

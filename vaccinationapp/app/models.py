@@ -1,5 +1,7 @@
+import json
 from django.db import models
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
+from django.http.response import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from django.core.validators import MinLengthValidator, MinValueValidator
@@ -29,9 +31,6 @@ class UserManager(BaseUserManager):
       return user
 
 
-AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google', 'email': 'email'}
-
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
@@ -39,8 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    auth_provider = models.CharField(max_length=255, blank=False, null=False, default=AUTH_PROVIDERS.get('email'))
-
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -49,14 +47,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.id)
 
-    def tokens(self):
+    def SetTokens(self):
         refresh = RefreshToken.for_user(self)
-        return{
-            "refresh": str(refresh),
-            "access": str(refresh.access_token)
-        }
-
-
+        self.refresh = str(refresh)
+        self.access = str(refresh.access_token)
+        return(self)
+        # return{
+        #     "refresh": str(refresh),
+        #     "access": str(refresh.access_token)
+        # }
 
 class UserActivationToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
