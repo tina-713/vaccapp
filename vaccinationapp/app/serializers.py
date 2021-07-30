@@ -175,6 +175,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
         model = Appointment
         fields = [
             'person',
+            'status',
             'office',
             'kind', 
             'date'

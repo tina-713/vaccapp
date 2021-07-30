@@ -165,6 +165,12 @@ class Person(models.Model):
 
 class Appointment(models.Model):
     
+    OPTIONS = (
+        ('cancelled', 'cancelled'),
+        ('ongoing', 'ongoing'),
+        ('done', 'done'),
+    )
+
     TYPE = (
         ('prima doza', 'prima doza'),
         ('rapel', 'rapel'),
@@ -172,6 +178,7 @@ class Appointment(models.Model):
 
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
+    status = models.CharField(max_length=30, choices=OPTIONS, default='ongoing')
     kind = models.CharField(max_length=30, choices=TYPE) 
     date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
