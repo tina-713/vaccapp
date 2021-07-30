@@ -1,21 +1,17 @@
-from django.shortcuts import render
-from rest_framework import generics, status, viewsets
-from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer, ResetPasswordEmailRequestSerializer
+from rest_framework import generics, status
+from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
 import jwt, datetime
 from rest_framework.views import APIView
-from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
 
 
 class RegisterView(generics.GenericAPIView):
-  permission_classes = (IsAuthenticated,)
+  # permission_classes = (IsAuthenticated,)
 
   serializer_class = RegisterSerializer
 
@@ -30,7 +26,6 @@ class RegisterView(generics.GenericAPIView):
     token = RefreshToken.for_user(user).access_token
     
     current_site = get_current_site(request).domain
-    # relativeLink = reverse('verify')
     now = datetime.datetime.now()
     UserToken = UserActivationToken()
    
@@ -73,22 +68,6 @@ class Login(generics.GenericAPIView):
     serializer.is_valid(raise_exception=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-class RequestPasswordResetEmail(generics.GenericAPIView):
-    serializer_class = ResetPasswordEmailRequestSerializer
-
-    def post(self, request):
-      data={'request':request, 'data':request.data}
-      serializer = self.serializer_class(data=request.data)
-      serializer.is_valid(raise_exception=True)
-      return Response({'success':'We have sent you a link to reset your password.'}, status=status.HTTP_200_OK)
-
-
-class PassordTokenCheck(generics.GenericAPIView):
-  def get(self,request, uidb64,token):
-    pass
 
 
 
