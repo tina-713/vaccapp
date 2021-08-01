@@ -1,5 +1,5 @@
 from rest_framework import generics, status
-from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer
+from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
@@ -35,7 +35,7 @@ class RegisterView(generics.GenericAPIView):
     email_body = ' Use the link below to verify your email \n' + absurl
     data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
   
-    Util.send_email(data)
+    # Util.send_email(data)
     return Response(user_data, status=status.HTTP_201_CREATED)
 
 
@@ -125,14 +125,14 @@ class CityList(APIView):
     return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CityDetails(APIView):
-  def get_object(self, pk):
+  def get_object(self, county):
     try:
-      return City.objects.get(pk=pk)
+      return City.objects.get(county=county)
     except City.DoesNotExist:
        return Response(status=status.HTTP_404_NOT_FOUND)
 
-  def get(self, request, pk):
-    city = self.get_object(pk)
+  def get(self, request, county):
+    city = self.get_object(county)
     serializer = CitySerializer(city)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -301,3 +301,16 @@ class WaitingDetails(APIView):
     waiting = self.get_object(pk)
     waiting.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserDetails(APIView):
+    def get(self,request,email):
+      try:
+        user = User.objects.get(email=email)
+      except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+      serializer = UserSerializer(user,data={"id":user.id})
+      if serializer.is_valid():
+         return Response(serializer.data, status=status.HTTP_201_CREATED)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    

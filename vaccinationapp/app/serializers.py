@@ -72,7 +72,6 @@ class LoginSerializer(serializers.ModelSerializer):
             'access': user.access
         }
 
-        return super().validate(attrs)
 
 
 
@@ -191,4 +190,12 @@ class WaitingSerializer(serializers.ModelSerializer):
             'person',
             'office',
             'spot'
+        ]
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 
         ]
