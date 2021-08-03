@@ -127,13 +127,13 @@ class CityList(APIView):
 class CityDetails(APIView):
   def get_object(self, county):
     try:
-      return City.objects.get(county=county)
+      return City.objects.all().filter(county=county)
     except City.DoesNotExist:
        return Response(status=status.HTTP_404_NOT_FOUND)
 
   def get(self, request, county):
     city = self.get_object(county)
-    serializer = CitySerializer(city)
+    serializer = CitySerializer(city, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
   def put(self, request, pk):
