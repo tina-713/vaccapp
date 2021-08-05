@@ -162,6 +162,7 @@ class PersonSerializer(serializers.ModelSerializer):
             'age',
             'phone',
             'email',
+            'county',
             'city',
             'category'
         ]

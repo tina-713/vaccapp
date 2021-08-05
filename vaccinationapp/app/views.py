@@ -109,6 +109,11 @@ class CountyDetails(APIView):
     county.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+class CountyCityDetails(APIView):
+  def get(self,request,city):
+    counties  = County.objects.all().filter(city=city)
+    serializer = CountySerializer(counties, many=True)
+    return Response(serializer.data,  status=status.HTTP_200_OK)
 
 
 class CityList(APIView):
@@ -246,6 +251,12 @@ class PersonDetails(APIView):
     person = self.get_object(pk)
     person.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+class PersonUserDetails(APIView):
+    def get(self,request,user):
+      person = Person.objects.all().filter(user=user)
+      serializer = PersonSerializer(person, many=True)
+      return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
