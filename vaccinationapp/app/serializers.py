@@ -81,6 +81,7 @@ class OfficeSerializer(serializers.ModelSerializer):
         model = Office
         fields = [
             'id',
+            'county',
             'city',
             'name', 
             'addres',

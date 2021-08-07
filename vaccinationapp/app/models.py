@@ -128,6 +128,7 @@ class Office(models.Model):
     addres = models.CharField(max_length=500, blank=False)
     phone =models.CharField('phone', max_length=10, validators=[MinLengthValidator(10)])
     spots = models.PositiveIntegerField(default=0)
+    county = models.ForeignKey(County, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='office')
     vaccine = models.ForeignKey(Vaccine, on_delete=models.CASCADE, related_name='office')
     created_at = models.DateTimeField(auto_now_add=True)
