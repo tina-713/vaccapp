@@ -8,7 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 import jwt, datetime
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-
+import calendar
 
 class RegisterView(generics.GenericAPIView):
   # permission_classes = (IsAuthenticated,)
@@ -211,6 +211,27 @@ class OfficeDetails(APIView):
     office = self.get_object(pk)
     office.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OfficeAppointmentDateDetails(APIView):
+  def get(self, request, pk,date):
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    office = Office.objects.get(pk=pk)
+    serializer = OfficeSerializer(office)
+    hlmit = serializer.data['hourlyLimit'] 
+    monthDays = (calendar.monthrange(date.year,date.month))[1]
+    dates=[]
+    for i in range(1,monthDays+1):
+        x = datetime.datetime(date.year, date.month, i)
+        if Appointment.objects.all().filter(office=pk,date=x.strftime("%Y-%m-%d")).count() <  (hlmit*10):
+          dates.append(x.strftime("%Y-%m-%d"))
+    return Response({"AvailableDates":dates}, status=status.HTTP_200_OK)
+
+# class OfficeAppointmentHourDetails(APIView):
+#   def get(self, request, pk,date,hour):
+#     office = self.get_object(pk)
+#     serializer = OfficeSerializer(office)
+#     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 

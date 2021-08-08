@@ -133,7 +133,7 @@ class Office(models.Model):
     vaccine = models.ForeignKey(Vaccine, on_delete=models.CASCADE, related_name='office')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    hourlyLimit = models.PositiveIntegerField(default=6)
     def __str__(self):
         return str(self.name)
 
@@ -183,6 +183,7 @@ class Appointment(models.Model):
     status = models.CharField(max_length=30, choices=OPTIONS, default='ongoing')
     kind = models.CharField(max_length=30, choices=TYPE) 
     date = models.DateField()
+    time = models.TimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

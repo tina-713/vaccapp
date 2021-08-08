@@ -1,4 +1,5 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
@@ -60,7 +61,6 @@ class LoginSerializer(serializers.ModelSerializer):
 
         user = auth.authenticate(email=email, password=password)
         user.SetTokens()
-        print(user)
         if not user:
             raise AuthenticationFailed('Invalid credentials')
         if not user.is_active:
@@ -74,10 +74,9 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 
-
 class OfficeSerializer(serializers.ModelSerializer):
-
     class Meta:
+        depth= 1
         model = Office
         fields = [
             'id',
@@ -87,11 +86,15 @@ class OfficeSerializer(serializers.ModelSerializer):
             'addres',
             'phone',
             'spots',
-            'vaccine'
+            'vaccine',
+            'hourlyLimit'
         ]
 
+    
 
+    
 
+           
 class CitySerializer(serializers.ModelSerializer):
     office = OfficeSerializer(many=True, read_only=True)
 
@@ -104,8 +107,6 @@ class CitySerializer(serializers.ModelSerializer):
             'office'
         ]
 
-
-
 class CountySerializer(serializers.ModelSerializer):
     cities = CitySerializer(many=True, read_only=True)
 
@@ -116,8 +117,6 @@ class CountySerializer(serializers.ModelSerializer):
             'name',
             'cities'
         ]
-
-
 
 class VaccineSerializer(serializers.ModelSerializer):
     office = OfficeSerializer(many=True, read_only=True)
@@ -179,7 +178,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'status',
             'office',
             'kind', 
-            'date'
+            'date',
+            'time'
         ]
 
 
