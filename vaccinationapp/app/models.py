@@ -125,7 +125,7 @@ class Categories(models.Model):
 
 class Office(models.Model):
     name = models.CharField(max_length=500, blank=False)
-    addres = models.CharField(max_length=500, blank=False)
+    address = models.CharField(max_length=500, blank=False)
     phone =models.CharField('phone', max_length=10, validators=[MinLengthValidator(10)])
     spots = models.PositiveIntegerField(default=0)
     county = models.ForeignKey(County, on_delete=models.CASCADE)
@@ -182,8 +182,8 @@ class Appointment(models.Model):
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
     status = models.CharField(max_length=30, choices=OPTIONS, default='ongoing')
     kind = models.CharField(max_length=30, choices=TYPE) 
-    date = models.DateField()
-    time = models.TimeField()
+    date = models.DateField(null=True)
+    time = models.TimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

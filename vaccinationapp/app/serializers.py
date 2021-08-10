@@ -83,7 +83,7 @@ class OfficeSerializer(serializers.ModelSerializer):
             'county',
             'city',
             'name', 
-            'addres',
+            'address',
             'phone',
             'spots',
             'vaccine',
