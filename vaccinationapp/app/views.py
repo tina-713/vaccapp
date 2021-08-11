@@ -219,19 +219,31 @@ class OfficeAppointmentDateDetails(APIView):
     office = Office.objects.get(pk=pk)
     serializer = OfficeSerializer(office)
     hlmit = serializer.data['hourlyLimit'] 
-    monthDays = (calendar.monthrange(date.year,date.month))[1]
+   
+    enddate = datetime.datetime(date.year,12,31)
+    delta = enddate - date
     dates=[]
-    for i in range(1,monthDays+1):
-        x = datetime.datetime(date.year, date.month, i)
+    for i in range(delta.days+1):
+        x = date + datetime.timedelta(days=i)
         if Appointment.objects.all().filter(office=pk,date=x.strftime("%Y-%m-%d")).count() <  (hlmit*10):
           dates.append(x.strftime("%Y-%m-%d"))
     return Response({"AvailableDates":dates}, status=status.HTTP_200_OK)
 
-# class OfficeAppointmentHourDetails(APIView):
-#   def get(self, request, pk,date,hour):
-#     office = self.get_object(pk)
-#     serializer = OfficeSerializer(office)
-#     return Response(serializer.data, status=status.HTTP_200_OK)
+class OfficeAppointmentHourDetails(APIView):
+  def get(self, request, pk,date):
+    date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    office = Office.objects.get(pk=pk)
+    serializer = OfficeSerializer(office)
+    hlmit = serializer.data['hourlyLimit'] 
+    serializer = OfficeSerializer(office)
+    hours =[]
+    startingHour= 8
+    LastHour = 18
+    for i in range(startingHour,LastHour+1):
+      if Appointment.objects.all().filter(office=pk,date=date.strftime("%Y-%m-%d"),time=i).count() <  hlmit:
+        hours.append(i)
+        
+    return Response({"AvailableHours":hours}, status=status.HTTP_200_OK)
 
 
 

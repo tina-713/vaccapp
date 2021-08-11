@@ -183,7 +183,7 @@ class Appointment(models.Model):
     status = models.CharField(max_length=30, choices=OPTIONS, default='ongoing')
     kind = models.CharField(max_length=30, choices=TYPE) 
     date = models.DateField(null=True)
-    time = models.TimeField(null=True)
+    time = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
