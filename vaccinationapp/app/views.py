@@ -217,12 +217,15 @@ class OfficeAppointmentDateDetails(APIView):
   def get(self, request, pk,date):
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
     office = Office.objects.get(pk=pk)
+    
     serializer = OfficeSerializer(office)
+  
     hlmit = serializer.data['hourlyLimit'] 
-   
+
     enddate = datetime.datetime(date.year,12,31)
     delta = enddate - date
     dates=[]
+    
     for i in range(delta.days+1):
         x = date + datetime.timedelta(days=i)
         if Appointment.objects.all().filter(office=pk,date=x.strftime("%Y-%m-%d")).count() <  (hlmit*10):
@@ -237,13 +240,19 @@ class OfficeAppointmentHourDetails(APIView):
     hlmit = serializer.data['hourlyLimit'] 
     serializer = OfficeSerializer(office)
     hours =[]
+    rapelHours=[]
     startingHour= 8
     LastHour = 18
     for i in range(startingHour,LastHour+1):
       if Appointment.objects.all().filter(office=pk,date=date.strftime("%Y-%m-%d"),time=i).count() <  hlmit:
         hours.append(i)
-        
-    return Response({"AvailableHours":hours}, status=status.HTTP_200_OK)
+
+    rapelDay = (date+datetime.timedelta(serializer.data['vaccine']['booster_days'])).strftime("%Y-%m-%d")
+    for i in range(startingHour,LastHour+1):
+      if Appointment.objects.all().filter(office=pk,date=rapelDay,time=i).count() <  hlmit:
+        rapelHours.append(i)
+
+    return Response({"AvailableHours":hours,"RapelDay":rapelDay,"RapelHours":rapelHours}, status=status.HTTP_200_OK)
 
 
 
@@ -300,13 +309,37 @@ class AppointmentList(APIView):
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def post(self,request):
-    serializer = AppointmentSerializer(data=request.data, many=True)
+    serializer = AppointmentSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AppointmentDetails(APIView):
+  def get_object(self, pk):
+    try:
+      return Appointment.objects.get(pk=pk)
+    except Appointment.DoesNotExist:
+       return Response(status=status.HTTP_404_NOT_FOUND)
+
+  def get(self, request, pk):
+    appointment = self.get_object(pk)
+    serializer = AppointmentSerializer(appointment)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  def put(self, request, pk):
+    appointment = self.get_object(pk)
+    serializer = AppointmentSerializer(appointment, data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def delete(self, request, pk):
+    appointment = self.get_object(pk)
+    appointment.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 class WaitingList(APIView):
   def get(self,request):
