@@ -340,6 +340,13 @@ class AppointmentDetails(APIView):
     appointment = self.get_object(pk)
     appointment.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+  
+class AppointmentUserDetails(APIView):
+  def get(self,request,user):
+    appointment = Appointment.objects.all().filter(user=user)
+    serializer = AppointmentSerializer(appointment, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class WaitingList(APIView):
   def get(self,request):

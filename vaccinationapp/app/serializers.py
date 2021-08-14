@@ -172,8 +172,10 @@ class PersonSerializer(serializers.ModelSerializer):
 class AppointmentSerializer(serializers.ModelSerializer):
 
     class Meta:
+        depth= 2
         model = Appointment
         fields = [
+            'user',
             'person',
             'status',
             'office',

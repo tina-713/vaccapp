@@ -168,9 +168,9 @@ class Person(models.Model):
 class Appointment(models.Model):
     
     OPTIONS = (
-        ('cancelled', 'cancelled'),
-        ('ongoing', 'ongoing'),
-        ('done', 'done'),
+        ('anulată', 'anulată'),
+        ('în curs', 'în curs'),
+        ('finalizată', 'finalizată'),
     )
 
     TYPE = (
@@ -178,9 +178,10 @@ class Appointment(models.Model):
         ('rapel', 'rapel'),
     )
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
-    status = models.CharField(max_length=30, choices=OPTIONS, default='ongoing')
+    status = models.CharField(max_length=30, choices=OPTIONS, default='în curs')
     kind = models.CharField(max_length=30, choices=TYPE) 
     date = models.DateField(null=True)
     time = models.IntegerField()
