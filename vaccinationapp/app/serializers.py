@@ -172,19 +172,29 @@ class PersonSerializer(serializers.ModelSerializer):
 class AppointmentSerializer(serializers.ModelSerializer):
 
     class Meta:
-        depth= 2
+        depth=2
         model = Appointment
         fields = [
-            'user',
             'person',
             'status',
             'office',
             'kind', 
             'date',
-            'time'
+            'time',
         ]
 
+class AppointmentPostSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Appointment
+        fields = [
+            'person',
+            'status',
+            'office',
+            'kind', 
+            'date',
+            'time',
+        ]
 
 class WaitingSerializer(serializers.ModelSerializer):
 

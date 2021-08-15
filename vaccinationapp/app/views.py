@@ -1,5 +1,5 @@
 from rest_framework import generics, status
-from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer,UserSerializer
+from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer,UserSerializer,AppointmentPostSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
@@ -309,7 +309,7 @@ class AppointmentList(APIView):
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def post(self,request):
-    serializer = AppointmentSerializer(data=request.data)
+    serializer = AppointmentPostSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -343,7 +343,8 @@ class AppointmentDetails(APIView):
   
 class AppointmentUserDetails(APIView):
   def get(self,request,user):
-    appointment = Appointment.objects.all().filter(user=user)
+    persons = Person.objects.all().filter(user=user)
+    appointment = Appointment.objects.all().filter(person__in=persons)
     serializer = AppointmentSerializer(appointment, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

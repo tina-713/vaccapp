@@ -178,7 +178,6 @@ class Appointment(models.Model):
         ('rapel', 'rapel'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
     status = models.CharField(max_length=30, choices=OPTIONS, default='în curs')
