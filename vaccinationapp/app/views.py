@@ -5,6 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Max,F
 import jwt, datetime
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -310,6 +311,7 @@ class AppointmentList(APIView):
   
   def post(self,request):
     serializer = AppointmentPostSerializer(data=request.data)
+    off = Office.objects.all().filter(id=serializer.initial_data['office']).update(spots=F('spots')-1)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -330,7 +332,11 @@ class AppointmentDetails(APIView):
 
   def put(self, request, pk):
     appointment = self.get_object(pk)
+    
+    ser =  AppointmentSerializer(appointment)
     serializer = AppointmentSerializer(appointment, data=request.data)
+    if request.data['status'] == "finalizata" or request.data['status'] == "anulata":
+      off = Office.objects.all().filter(id=ser.data['office']['id']).update(spots=F('spots')+1)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -356,6 +362,10 @@ class WaitingList(APIView):
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def post(self,request):
+    maxSpots = Waiting.objects.all().filter(office=request.data['office']).aggregate(Max("spot"))
+    request.data['spot']= maxSpots['spot__max']+1
+    
+
     serializer = WaitingSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
@@ -383,7 +393,10 @@ class WaitingDetails(APIView):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   def delete(self, request, pk):
-    waiting = self.get_object(pk)
+    waiting = Waiting.objects.get(pk=pk)
+    serializer = WaitingSerializer(waiting)
+
+    WaitingTobeUpdated = Waiting.objects.filter(office=serializer.data['office'],spot__gte=serializer.data['spot']).update(spot=F('spot')-1)
     waiting.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 

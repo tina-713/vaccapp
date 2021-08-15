@@ -168,9 +168,9 @@ class Person(models.Model):
 class Appointment(models.Model):
     
     OPTIONS = (
-        ('anulată', 'anulată'),
+        ('anulata', 'anulata'),
         ('în curs', 'în curs'),
-        ('finalizată', 'finalizată'),
+        ('finalizata', 'finalizata'),
     )
 
     TYPE = (
@@ -198,7 +198,7 @@ class Appointment(models.Model):
 class Waiting(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
-    spot = models.PositiveIntegerField(default=0)
+    spot = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -175,6 +175,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
         depth=2
         model = Appointment
         fields = [
+            'id',
             'person',
             'status',
             'office',
