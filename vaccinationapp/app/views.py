@@ -373,8 +373,11 @@ class WaitingList(APIView):
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def post(self,request):
-    maxSpots = Waiting.objects.all().filter(office=request.data['office']).aggregate(Max("spot"))
-    request.data['spot']= maxSpots['spot__max']+1
+    if ( Waiting.objects.all().count() > 0):
+      maxSpots = Waiting.objects.all().filter(office=request.data['office']).aggregate(Max("spot"))
+      request.data['spot']= maxSpots['spot__max']+1
+    else:
+      maxSpots=1
     
 
     serializer = WaitingSerializer(data=request.data)

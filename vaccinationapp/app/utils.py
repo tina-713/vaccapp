@@ -1,4 +1,3 @@
-from vaccinationapp.app.views import WaitingList
 from django.db.models.aggregates import Min
 from django.db.models.expressions import F
 from .serializers import PersonSerializer, UserFullSerializer, UserSerializer, WaitingSerializer
