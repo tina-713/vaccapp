@@ -3,9 +3,9 @@ from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, 
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
-from .utils import Util
+from .utils import SendEmailToFirstPersonInQueue, Util
 from django.contrib.sites.shortcuts import get_current_site
-from django.db.models import Max,F
+from django.db.models import Max,F,Min
 import jwt, datetime
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -335,8 +335,19 @@ class AppointmentDetails(APIView):
     
     ser =  AppointmentSerializer(appointment)
     serializer = AppointmentSerializer(appointment, data=request.data)
+    waitingList = Waiting.objects.all().filter(office = ser.data['office']['id']).count()
+    officeId = ser.data['office']['id']
+    
+    
     if request.data['status'] == "finalizata" or request.data['status'] == "anulata":
       off = Office.objects.all().filter(id=ser.data['office']['id']).update(spots=F('spots')+1)
+      office = Office.objects.get(id=officeId)
+      officeSer = OfficeSerializer(office)
+      if waitingList and officeSer.data['spots'] >= 2:
+   
+        SendEmailToFirstPersonInQueue(officeId)
+        
+   
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -411,4 +422,3 @@ class UserDetails(APIView):
          return Response(serializer.data, status=status.HTTP_201_CREATED)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    

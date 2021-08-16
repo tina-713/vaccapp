@@ -213,4 +213,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 
+            
         ]
+
+class UserFullSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 
+            'email'
+        ]        

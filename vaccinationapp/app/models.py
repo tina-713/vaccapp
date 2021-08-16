@@ -169,7 +169,7 @@ class Appointment(models.Model):
     
     OPTIONS = (
         ('anulata', 'anulata'),
-        ('în curs', 'în curs'),
+        ('in curs', 'in curs'),
         ('finalizata', 'finalizata'),
     )
 
