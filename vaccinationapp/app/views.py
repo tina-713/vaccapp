@@ -345,7 +345,7 @@ class AppointmentDetails(APIView):
       officeSer = OfficeSerializer(office)
       if waitingList and officeSer.data['spots'] >= 2:
    
-        SendEmailToFirstPersonInQueue(officeId)
+        SendEmailToFirstPersonInQueue(officeId,waitingList)
         
    
     if serializer.is_valid():
