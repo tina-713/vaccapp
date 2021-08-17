@@ -213,6 +213,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 
+            'is_superuser'
             
         ]
 
