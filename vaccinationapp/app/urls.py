@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AppointmentUserDetails,RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails, PersonList,AppointmentDetails, PersonDetails, AppointmentList, WaitingList, WaitingDetails,UserDetails,PersonUserDetails,CountyCityDetails,OfficeAppointmentDateDetails,OfficeAppointmentHourDetails
+from .views import AppointmentUserDetails,RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails, PersonList,AppointmentDetails, PersonDetails, AppointmentList, WaitingList, WaitingDetails,UserDetails,PersonUserDetails,CountyCityDetails,OfficeAppointmentDateDetails,OfficeAppointmentHourDetails,OfficeUserList
 
 urlpatterns = [
   path('auth/register/', RegisterView.as_view(), name="register"),
@@ -12,6 +12,7 @@ urlpatterns = [
   path('vaccine/', VaccineList.as_view(), name="vaccine"),
   path('categories/', CategoryList.as_view(), name="categories"),
   path('office/', OfficeList.as_view(), name="office"),
+  path('office/user/<int:person>', OfficeUserList.as_view(), name="office"),
   path('office/<int:pk>/', OfficeDetails.as_view()),
   path('office/<int:pk>/<date>/',OfficeAppointmentDateDetails.as_view()),
   path('office/<int:pk>/<date>/time/',OfficeAppointmentHourDetails.as_view()),

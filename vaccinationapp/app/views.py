@@ -33,10 +33,10 @@ class RegisterView(generics.GenericAPIView):
     UserToken.create_token(token=token,datetime=now,user=user_data['id'])
    
     absurl = 'http://'+current_site+"/auth/verify/"+str(UserToken)
-    email_body = ' Use the link below to verify your email \n' + absurl
-    data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
+    email_body = ' Utilizați linkul de mai jos pentru a vă verifica adresa de email. \n' + absurl
+    data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verifica-ți email-ul'}
   
-    # Util.send_email(data)
+    Util.send_email(data)
     return Response(user_data, status=status.HTTP_201_CREATED)
 
 
@@ -177,9 +177,14 @@ class CategoryList(APIView):
 
 class OfficeList(APIView):
   def get(self,request):
-    office = Office.objects.all()
-    serializer = OfficeSerializer(office, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    offices = Office.objects.all()
+    serializer = OfficeSerializer(offices, many=True)
+    rOff =[]
+    for x in serializer.data:
+      waitingList = Waiting.objects.all().filter(office=x['id']).count()
+      x['waitingList'] = waitingList
+      rOff.append(x)
+    return Response(rOff, status=status.HTTP_200_OK)
   
   def post(self,request):
     serializer = OfficeSerializer(data=request.data)
@@ -187,6 +192,48 @@ class OfficeList(APIView):
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OfficeUserList(APIView):
+  def get(self,request,person):
+    appointment=None
+    waiting = None
+    appointmentSerializer = []
+    waitingSerializer = []
+    rOff =[]
+    try:
+      appointment = Appointment.objects.get(person=person)
+    except Exception as e :
+      pass
+    try:
+      waiting = Waiting.objects.get(person=person)
+    except Exception as e :
+      pass
+    if appointment:
+      appointmentSerializer = AppointmentSerializer(appointment)
+
+    if waiting:
+      waitingSerializer = WaitingSerializer(waiting)
+
+    offices = Office.objects.all()
+    serializer = OfficeSerializer(offices, many=True)
+  
+    for x in serializer.data:
+      waitingList = Waiting.objects.all().filter(office=x['id']).count()
+      x['isWaitingList'] = False
+      x['isAppointed'] = False
+
+      x['waitingList'] = waitingList 
+      if waitingSerializer :
+        if waitingSerializer.data['office'] == x['id']:
+          x['isWaitingList'] = True
+      if appointmentSerializer :
+        if appointmentSerializer.data['office'] == x['id']:
+          x['isAppointed'] = True
+
+      rOff.append(x)
+
+      
+    return Response(rOff, status=status.HTTP_200_OK)
 
 class OfficeDetails(APIView):
   def get_object(self, pk):
@@ -297,9 +344,22 @@ class PersonDetails(APIView):
 
 class PersonUserDetails(APIView):
     def get(self,request,user):
-      person = Person.objects.all().filter(user=user)
+      person = Person.objects.all().filter(user=user)    
       serializer = PersonSerializer(person, many=True)
-      return Response(serializer.data, status=status.HTTP_200_OK)
+      rPers =[]
+      for person in serializer.data:
+        spot = 0
+        try: 
+          waitingList = Waiting.objects.get(person=person['id'])
+          waitingSerializer = WaitingSerializer(waitingList)
+          spot= waitingSerializer.data['spot']
+        except Exception as e :
+          pass
+          
+        person['waitingList'] = spot
+        rPers.append(person)
+
+      return Response(rPers, status=status.HTTP_200_OK)
 
 
 

@@ -180,7 +180,7 @@ class Appointment(models.Model):
 
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     office = models.ForeignKey(Office, on_delete=models.CASCADE)
-    status = models.CharField(max_length=30, choices=OPTIONS, default='în curs')
+    status = models.CharField(max_length=30, choices=OPTIONS, default='in curs')
     kind = models.CharField(max_length=30, choices=TYPE) 
     date = models.DateField(null=True)
     time = models.IntegerField()
