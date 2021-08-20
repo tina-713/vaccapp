@@ -195,21 +195,24 @@ class OfficeList(APIView):
 
 class OfficeUserList(APIView):
   def get(self,request,person):
-    appointment=None
+    appointment= None
     waiting = None
     appointmentSerializer = []
     waitingSerializer = []
     rOff =[]
+
     try:
-      appointment = Appointment.objects.get(person=person)
+      appointments = Appointment.objects.all().filter(person=person)
     except Exception as e :
       pass
+    
     try:
       waiting = Waiting.objects.get(person=person)
     except Exception as e :
       pass
-    if appointment:
-      appointmentSerializer = AppointmentSerializer(appointment)
+
+    if appointments:
+      appointmentSerializer = AppointmentSerializer(appointments,many=True)
 
     if waiting:
       waitingSerializer = WaitingSerializer(waiting)
@@ -227,8 +230,10 @@ class OfficeUserList(APIView):
         if waitingSerializer.data['office'] == x['id']:
           x['isWaitingList'] = True
       if appointmentSerializer :
-        if appointmentSerializer.data['office'] == x['id']:
-          x['isAppointed'] = True
+        for i in appointmentSerializer.data:
+          if i['office']['id'] == x['id'] and i['status'] != 'anulata':
+            x['isAppointed'] = True
+            pass
 
       rOff.append(x)
 
@@ -392,22 +397,18 @@ class AppointmentDetails(APIView):
 
   def put(self, request, pk):
     appointment = self.get_object(pk)
-    
     ser =  AppointmentSerializer(appointment)
     serializer = AppointmentSerializer(appointment, data=request.data)
     waitingList = Waiting.objects.all().filter(office = ser.data['office']['id']).count()
     officeId = ser.data['office']['id']
-    
     
     if request.data['status'] == "finalizata" or request.data['status'] == "anulata":
       off = Office.objects.all().filter(id=ser.data['office']['id']).update(spots=F('spots')+1)
       office = Office.objects.get(id=officeId)
       officeSer = OfficeSerializer(office)
       if waitingList and officeSer.data['spots'] >= 2:
-   
         SendEmailToFirstPersonInQueue(officeId,waitingList)
         
-   
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -470,7 +471,18 @@ class WaitingDetails(APIView):
     waiting = Waiting.objects.get(pk=pk)
     serializer = WaitingSerializer(waiting)
 
-    WaitingTobeUpdated = Waiting.objects.filter(office=serializer.data['office'],spot__gte=serializer.data['spot']).update(spot=F('spot')-1)
+    if Waiting.objects.all().filter(office=serializer.data['office']).count() > 1:
+      Waiting.objects.filter(office=serializer.data['office'],spot__gte=serializer.data['spot']).update(spot=F('spot')-1)
+    waiting.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+class WaitingPersonOfficeDetails(APIView):
+  def delete(self, request, person,office):
+    waiting = Waiting.objects.get(person=person,office=office)
+    serializer = WaitingSerializer(waiting)
+
+    if Waiting.objects.all().filter(office=office).count() > 1:
+      Waiting.objects.filter(office=serializer.data['office'],spot__gte=serializer.data['spot']).update(spot=F('spot')-1)
     waiting.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
