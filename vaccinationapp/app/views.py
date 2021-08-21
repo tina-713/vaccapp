@@ -3,7 +3,7 @@ from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, 
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
-from .utils import SendEmailToFirstPersonInQueue, Util
+from .utils import SendEmailToFirstPersonInQueue, Util,ConstructAppointmentPdf,ConstructTabletPdf
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models import Max,F,Min
 import jwt, datetime
@@ -425,6 +425,15 @@ class AppointmentUserDetails(APIView):
     appointment = Appointment.objects.all().filter(person__in=persons)
     serializer = AppointmentSerializer(appointment, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AppointmentPdfDetails(APIView):
+  def get(self,request,appointment):
+    appointment = Appointment.objects.get(id=appointment)
+    serializer = AppointmentSerializer(appointment)
+    pdfFile = ConstructTabletPdf(serializer.data)
+    return pdfFile
+    #return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class WaitingList(APIView):
