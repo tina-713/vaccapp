@@ -118,3 +118,55 @@ def ConstructTabletPdf(data):
 
   return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
 
+def myFirstOfficePage(canvas, doc):
+    canvas.saveState()
+    canvas.setFont('Times-Bold',16)
+    canvas.drawString(330,500,"Programari")
+    canvas.setFont('Times-Roman',9)
+    canvas.drawString(0,100,"")
+    canvas.restoreState()
+
+def ConstructOfficeTabletPdf(data):
+  buffer = io.BytesIO()
+  doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30,leftMargin=30, topMargin=30,bottomMargin=18)
+  doc.pagesize = landscape(A4)
+  elements = [Spacer(1,2*inch)]
+  
+  dt = [
+  ["Beneficiar", "Tip Programare", "Status", "Locatie Centru de Vaccinare","Data Programarii","Ora Programarii"],
+  # [data['person']['name']+" "+data['person']['last_name'], data['kind'], data['status'], data['office']['name']+", "+data['office']['city']['name']+", "+data['office']['county']['name'],data['date'],str(data['time'])],
+  ]
+
+  for x in data:
+    s = [x['person']['name']+" "+x['person']['last_name'], x['kind'], x['status'], x['office']['name']+", "+x['office']['city']['name']+", "+x['office']['county']['name'],x['date'],str(x['time'])]
+    dt.append(s)
+  
+
+  #TODO: Get this line right instead of just copying it from the docs
+  style = TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
+                        ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
+                        ('VALIGN',(0,0),(0,-1),'TOP'),
+                        ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
+                        ('ALIGN',(0,-1),(-1,-1),'CENTER'),
+                        ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
+                        ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ])
+
+  #Configure style and word wrap
+  s = getSampleStyleSheet()
+  s = s["BodyText"]
+  s.wordWrap = 'CJK'
+  data2 = [[Paragraph(cell, s) for cell in row] for row in dt]
+  t=Table(data2)
+  t.setStyle(style)
+
+  #Send the data and build the file
+
+  elements.append(t)
+  
+  doc.build(elements,onFirstPage=myFirstPage)
+  buffer.seek(0)
+
+  return FileResponse(buffer, as_attachment=True, filename='hello.pdf')

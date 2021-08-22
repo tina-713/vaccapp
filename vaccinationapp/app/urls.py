@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AppointmentUserDetails,RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails, PersonList,AppointmentDetails, PersonDetails, AppointmentList, WaitingList, WaitingDetails,UserDetails,PersonUserDetails,CountyCityDetails,OfficeAppointmentDateDetails,OfficeAppointmentHourDetails,OfficeUserList,WaitingPersonOfficeDetails,AppointmentPdfDetails
+from .views import AppointmentUserDetails,RegisterView,Verify,Login,CountyList, CountyDetails, CityList, CityDetails, VaccineList, CategoryList, OfficeList, OfficeDetails, PersonList,AppointmentDetails, PersonDetails, AppointmentList, WaitingList, WaitingDetails,UserDetails,PersonUserDetails,CountyCityDetails,OfficeAppointmentDateDetails,OfficeAppointmentHourDetails,OfficeUserList,WaitingPersonOfficeDetails,AppointmentPdfDetails,AppointmentOfficeDetails,AppointmentPdfOfficeToday
 
 urlpatterns = [
   path('auth/register/', RegisterView.as_view(), name="register"),
@@ -22,7 +22,10 @@ urlpatterns = [
   path('appointment/', AppointmentList.as_view(), name="appointment"),
   path('appointment/<int:pk>/', AppointmentDetails.as_view()),
   path('appointment/pdf/<int:appointment>/', AppointmentPdfDetails.as_view()),
+  path('appointment/office/<int:office>/<date>', AppointmentOfficeDetails.as_view()),
+  path('appointment/office/<int:office>/', AppointmentOfficeDetails.as_view()),
   path('appointment/user/<int:user>/', AppointmentUserDetails.as_view()),
+  path('appointments/pdf/<int:office>/<date>', AppointmentPdfOfficeToday.as_view()),
   path('waiting-list/', WaitingList.as_view(), name="waiting-list"),
   path('waiting-list/<int:pk>/', WaitingDetails.as_view()),
   path('waiting-list/person/<int:person>/office/<int:office>', WaitingPersonOfficeDetails.as_view()),
