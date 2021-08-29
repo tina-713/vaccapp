@@ -283,7 +283,10 @@ class OfficeAppointmentDateDetails(APIView):
     
     serializer = OfficeSerializer(office)
     if rapel:
-      date = (date+datetime.timedelta(serializer.data['vaccine']['booster_days']))
+      if date > datetime.datetime.today():
+        date = (date+datetime.timedelta(serializer.data['vaccine']['booster_days']))
+      else :
+        date =  date.today()
       
     hlmit = serializer.data['hourlyLimit'] 
 
