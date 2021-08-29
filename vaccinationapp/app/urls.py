@@ -15,6 +15,7 @@ urlpatterns = [
   path('office/user/<int:person>', OfficeUserList.as_view(), name="office"),
   path('office/<int:pk>/', OfficeDetails.as_view()),
   path('office/<int:pk>/<date>/',OfficeAppointmentDateDetails.as_view()),
+  path('office/<int:pk>/<date>/<rapel>',OfficeAppointmentDateDetails.as_view()),
   path('office/<int:pk>/<date>/time/',OfficeAppointmentHourDetails.as_view()),
   path('person/', PersonList.as_view(), name="person"),
   path('person/<int:pk>/', PersonDetails.as_view()),

@@ -224,15 +224,21 @@ class OfficeUserList(APIView):
       waitingList = Waiting.objects.all().filter(office=x['id']).count()
       x['isWaitingList'] = False
       x['isAppointed'] = False
+      x['rapel'] = False
+      x['rapelFromDate'] = None
 
       x['waitingList'] = waitingList 
       if waitingSerializer :
         if waitingSerializer.data['office'] == x['id']:
           x['isWaitingList'] = True
       if appointmentSerializer :
-        for i in appointmentSerializer.data:
-          if i['office']['id'] == x['id'] and i['status'] != 'anulata':
+        for i in appointmentSerializer.data:     
+          if i['office']['id'] == x['id'] and i['status'] != 'anulata' and i['kind'] == "prima doza":
+            x['rapelFromDate'] = i['date']
+          if i['office']['id'] == x['id'] and i['status'] != 'anulata' and i['status'] != 'finalizata' and i['kind']=="prima doza":
             x['isAppointed'] = True
+          if i['office']['id'] == x['id'] and i['kind'] == "rapel" and (i['status'] == 'in curs' or i['status'] == "finalizata"):
+            x['rapel'] = True
             pass
 
       rOff.append(x)
@@ -267,12 +273,18 @@ class OfficeDetails(APIView):
 
 
 class OfficeAppointmentDateDetails(APIView):
-  def get(self, request, pk,date):
+  def get(self, request, pk,date,rapel=None):
+    
+      
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
+   
+      
     office = Office.objects.get(pk=pk)
     
     serializer = OfficeSerializer(office)
-  
+    if rapel:
+      date = (date+datetime.timedelta(serializer.data['vaccine']['booster_days']))
+      
     hlmit = serializer.data['hourlyLimit'] 
 
     enddate = datetime.datetime(date.year,12,31)
