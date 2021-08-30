@@ -423,7 +423,14 @@ class AppointmentDetails(APIView):
       officeSer = OfficeSerializer(office)
       if waitingList and officeSer.data['spots'] >= 2:
         SendEmailToFirstPersonInQueue(officeId,waitingList)
-        
+    
+    if request.data['status'] == "anulata" and request.data['kind']=='prima doza':
+      #cancel rapel as well
+      apps = Appointment.objects.get(id=pk)
+      appSerializer = AppointmentSerializer(apps)
+      Appointment.objects.all().filter(person=appSerializer.data['person']['id'],kind="rapel",status="in curs").update(status="anulata")
+     
+
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
