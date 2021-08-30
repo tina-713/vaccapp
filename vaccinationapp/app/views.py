@@ -296,7 +296,7 @@ class OfficeAppointmentDateDetails(APIView):
     
     for i in range(delta.days+1):
         x = date + datetime.timedelta(days=i)
-        if Appointment.objects.all().filter(office=pk,date=x.strftime("%Y-%m-%d")).count() <  (hlmit*10):
+        if Appointment.objects.all().filter(office=pk,date=x.strftime("%Y-%m-%d")).count() <  (hlmit*12):
           dates.append(x.strftime("%Y-%m-%d"))
     return Response({"AvailableDates":dates}, status=status.HTTP_200_OK)
 
@@ -309,8 +309,8 @@ class OfficeAppointmentHourDetails(APIView):
     serializer = OfficeSerializer(office)
     hours =[]
     rapelHours=[]
-    startingHour= 8
-    LastHour = 18
+    startingHour= 7
+    LastHour = 19
     for i in range(startingHour,LastHour+1):
       if Appointment.objects.all().filter(office=pk,date=date.strftime("%Y-%m-%d"),time=i).count() <  hlmit:
         hours.append(i)
