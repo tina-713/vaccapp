@@ -35,8 +35,8 @@ def SendEmailToFirstPersonInQueue(officeId,WaitingList):
     WaitingTobeUpdated = Waiting.objects.filter(office=officeId,spot__gte=lowestSpot['spot__min']).update(spot=F('spot')-1)
   
   data = {}
-  data['email_subject'] = 'Placeholder text, ready for appointment'
-  data["email_body"] = 'bla bla http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])
+  data['email_subject'] = 'Loc vaccinare disponibil'
+  data["email_body"] = ' Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare \n http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])
   data['to_email'] = userSerializer.data['email']
   try :
     Util.send_email(data)
@@ -48,7 +48,7 @@ def SendEmailToFirstPersonInQueue(officeId,WaitingList):
     Waiting.objects.filter(office=officeId,spot__gte=lowestSpot['spot__min']).update(spot=F('spot')-1)
 
 def ConstructAppointmentPdf(data):
-  d = datetime.datetime.today().strftime('%Y-%m-%d')
+  d = datetime.datetime.today().strftime('%d-%m-%Y')
   buffer = io.BytesIO()
 
   p = canvas.Canvas(buffer,pagesize=A4)
