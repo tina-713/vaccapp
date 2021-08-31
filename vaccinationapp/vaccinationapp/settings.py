@@ -90,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'vaccinationapp',
         'USER': 'root',
-        'PASSWORD': 'parola123',
+        'PASSWORD': 'bogdanlol3142',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -143,7 +143,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
