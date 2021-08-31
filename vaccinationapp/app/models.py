@@ -81,7 +81,8 @@ class UserActivationToken(models.Model):
 
 class County(models.Model):
     name = models.CharField(max_length=30,blank=False, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    code = models.CharField(max_length=2,null=False)
+    created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -92,6 +93,10 @@ class County(models.Model):
 class City(models.Model):
     county = models.ForeignKey(County, on_delete=models.CASCADE, related_name='cities')
     name = models.CharField(max_length=60,blank=False, null=False)
+    siruta = models.IntegerField(null=False)
+    longitude = models.FloatField(null=False)
+    latitude = models.FloatField(null=False)
+    region= models.CharField(max_length=64)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

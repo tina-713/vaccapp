@@ -108,14 +108,14 @@ class CitySerializer(serializers.ModelSerializer):
         ]
 
 class CountySerializer(serializers.ModelSerializer):
-    cities = CitySerializer(many=True, read_only=True)
+    # cities = CitySerializer(many=True, read_only=True)
 
     class Meta:
         model = County
         fields = [
             'id', 
             'name',
-            'cities'
+            'code'
         ]
 
 class VaccineSerializer(serializers.ModelSerializer):
