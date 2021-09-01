@@ -220,12 +220,12 @@ class OfficeUserList(APIView):
     offices = Office.objects.all()
     serializer = OfficeSerializer(offices, many=True)
    
-    
-    for i in appointmentSerializer.data:
-      #check if first dose
-      if i['kind'] != "doza unica" and (i['status']=="in curs" or ['status']=="finalizata"):
-        #get the vaccinetype
-        vaccineType = i['office']['vaccine']['id']
+    if appointmentSerializer:
+      for i in appointmentSerializer.data:
+        #check if first dose
+        if i['kind'] != "doza unica" and (i['status']=="in curs" or ['status']=="finalizata"):
+          #get the vaccinetype
+          vaccineType = i['office']['vaccine']['id']
         
     for x in serializer.data:
       waitingList = Waiting.objects.all().filter(office=x['id']).count()
