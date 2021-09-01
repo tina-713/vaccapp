@@ -167,7 +167,6 @@ class VaccineList(APIView):
 
 
 class CategoryList(APIView):
-  
   def get(self,request):
     category = Categories.objects.all()
     serializer = CategorySerializer(category, many=True)
@@ -199,6 +198,7 @@ class OfficeUserList(APIView):
     waiting = None
     appointmentSerializer = []
     waitingSerializer = []
+    vaccineType = 0
     rOff =[]
 
     try:
@@ -219,14 +219,21 @@ class OfficeUserList(APIView):
 
     offices = Office.objects.all()
     serializer = OfficeSerializer(offices, many=True)
-  
+   
+    
+    for i in appointmentSerializer.data:
+      #check if first dose
+      if i['kind'] != "doza unica" and (i['status']=="in curs" or ['status']=="finalizata"):
+        #get the vaccinetype
+        vaccineType = i['office']['vaccine']['id']
+        
     for x in serializer.data:
       waitingList = Waiting.objects.all().filter(office=x['id']).count()
       x['isWaitingList'] = False
       x['isAppointed'] = False
       x['rapel'] = False
       x['rapelFromDate'] = None
-
+      x['rapelEligible'] = False
       x['waitingList'] = waitingList 
       if waitingSerializer :
         if waitingSerializer.data['office'] == x['id']:
@@ -235,14 +242,22 @@ class OfficeUserList(APIView):
         for i in appointmentSerializer.data:     
           if i['office']['id'] == x['id'] and i['status'] != 'anulata' and i['kind'] == "prima doza":
             x['rapelFromDate'] = i['date']
-          if i['office']['id'] == x['id'] and i['status'] != 'anulata' and i['status'] != 'finalizata' and i['kind']=="prima doza":
+          if i['office']['id'] == x['id'] and i['status'] != 'anulata' and i['status'] != 'finalizata' and (i['kind']=="prima doza" or i['kind']=="doza unica"):
             x['isAppointed'] = True
+          if i['kind']=="doza unica" and i['status'] == 'in curs':
+            x['rapel'] = True
           if i['office']['id'] == x['id'] and i['kind'] == "rapel" and (i['status'] == 'in curs' or i['status'] == "finalizata"):
             x['rapel'] = True
             pass
-
+      
+      if vaccineType !=0:
+        if x['rapel'] is False and x['vaccine']['id']==vaccineType:
+          x['rapelEligible'] = True
+  
+            
+        
+      
       rOff.append(x)
-
       
     return Response(rOff, status=status.HTTP_200_OK)
 
@@ -471,6 +486,7 @@ class AppointmentPdfOfficeToday(APIView):
     pdfFile = ConstructOfficeTabletPdf(serializer.data)
     return pdfFile
 class AppointmentPdfDetails(APIView):
+
   def get(self,request,appointment):
     appointment = Appointment.objects.get(id=appointment)
     serializer = AppointmentSerializer(appointment)

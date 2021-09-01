@@ -181,6 +181,7 @@ class Appointment(models.Model):
     TYPE = (
         ('prima doza', 'prima doza'),
         ('rapel', 'rapel'),
+        ('doza unica','doza unica'),
     )
 
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
