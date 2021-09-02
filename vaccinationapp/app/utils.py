@@ -138,8 +138,9 @@ def ConstructOfficeTabletPdf(data):
   ]
 
   for x in data:
-    s = [x['person']['name']+" "+x['person']['last_name'], x['kind'], x['status'], x['office']['name']+", "+x['office']['city']['name']+", "+x['office']['county']['name'],x['date'],str(x['time'])]
-    dt.append(s)
+    if x['status'] != "anulata":
+      s = [x['person']['name']+" "+x['person']['last_name'], x['kind'], x['status'], x['office']['name']+", "+x['office']['city']['name']+", "+x['office']['county']['name'],x['date'],str(x['time'])]
+      dt.append(s)
   
 
   #TODO: Get this line right instead of just copying it from the docs
