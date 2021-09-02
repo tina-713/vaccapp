@@ -1,5 +1,5 @@
 from rest_framework import generics, status
-from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer,UserSerializer,AppointmentPostSerializer
+from .serializers import RegisterSerializer, LoginSerializer, CountySerializer, CitySerializer, VaccineSerializer, CategorySerializer, OfficeSerializer, PersonSerializer, AppointmentSerializer, WaitingSerializer,UserSerializer,AppointmentPostSerializer,OfficePostSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserActivationToken, County, City, Vaccine, Categories, Office, Person, Appointment, Waiting
@@ -186,7 +186,7 @@ class OfficeList(APIView):
     return Response(rOff, status=status.HTTP_200_OK)
   
   def post(self,request):
-    serializer = OfficeSerializer(data=request.data)
+    serializer = OfficePostSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)

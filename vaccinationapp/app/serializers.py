@@ -90,7 +90,20 @@ class OfficeSerializer(serializers.ModelSerializer):
             'hourlyLimit'
         ]
 
-    
+
+class OfficePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Office
+        fields = [
+            'county',
+            'city',
+            'name', 
+            'address',
+            'phone',
+            'spots',
+            'vaccine',
+            'hourlyLimit'
+        ]
 
     
 
