@@ -32,7 +32,7 @@ class RegisterView(generics.GenericAPIView):
    
     UserToken.create_token(token=token,datetime=now,user=user_data['id'])
    
-    absurl = 'http://'+current_site+"/auth/verify/"+str(UserToken)
+    absurl = 'http://localhost:8080/confirmation/'+str(UserToken)
     email_body = ' Utilizați linkul de mai jos pentru a vă verifica adresa de email. \n' + absurl
     data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verifica-ți email-ul'}
   
@@ -448,6 +448,8 @@ class AppointmentDetails(APIView):
       apps = Appointment.objects.get(id=pk)
       appSerializer = AppointmentSerializer(apps)
       Appointment.objects.all().filter(person=appSerializer.data['person']['id'],kind="rapel",status="in curs").update(status="anulata")
+      Office.objects.all().filter(id=officeId).update(spots=F('spots')+1)
+
      
 
     if serializer.is_valid():

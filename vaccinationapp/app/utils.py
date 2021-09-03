@@ -18,6 +18,7 @@ class Util:
   @staticmethod
   def send_email(data):
     email = EmailMessage(subject=data['email_subject'], body=data['email_body'], to=[data['to_email']])
+    email.content_subtype = "html"
     email.send()
 
 def SendEmailToFirstPersonInQueue(officeId,WaitingList):
@@ -34,9 +35,11 @@ def SendEmailToFirstPersonInQueue(officeId,WaitingList):
   if WaitingList > 1 :
     WaitingTobeUpdated = Waiting.objects.filter(office=officeId,spot__gte=lowestSpot['spot__min']).update(spot=F('spot')-1)
   
+  html_content = '<p>Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare <a href="http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])+'">Accesati Programarea</p>'
   data = {}
   data['email_subject'] = 'Loc vaccinare disponibil'
-  data["email_body"] = ' Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare \n http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])
+  # data["email_body"] = ' Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare \n http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])
+  data["email_body"]=html_content
   data['to_email'] = userSerializer.data['email']
   try :
     Util.send_email(data)
