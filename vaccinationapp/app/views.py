@@ -377,8 +377,14 @@ class PersonDetails(APIView):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   def delete(self, request, pk):
+    apps = Appointment.objects.all().filter(person=pk,status="in curs")
+    appSerializer = AppointmentSerializer(apps,many=True)
+    for i in appSerializer.data:
+      Office.objects.all().filter(id=i['office']['id']).update(spots=F('spots')+1)
+    
     person = self.get_object(pk)
     person.delete()
+    
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 class PersonUserDetails(APIView):
