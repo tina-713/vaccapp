@@ -378,9 +378,10 @@ class PersonDetails(APIView):
 
   def delete(self, request, pk):
     apps = Appointment.objects.all().filter(person=pk,status="in curs")
-    appSerializer = AppointmentSerializer(apps,many=True)
-    for i in appSerializer.data:
-      Office.objects.all().filter(id=i['office']['id']).update(spots=F('spots')+1)
+    if apps:
+      appSerializer = AppointmentSerializer(apps,many=True)
+      for i in appSerializer.data:
+        Office.objects.all().filter(id=i['office']['id']).update(spots=F('spots')+1)
     
     person = self.get_object(pk)
     person.delete()
