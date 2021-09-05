@@ -387,11 +387,11 @@ class PersonDetails(APIView):
       for i in appSerializer.data:
         Office.objects.all().filter(id=i['office']['id']).update(spots=F('spots')+1)
 
-    wlist = Waiting.objects.get(person=pk)
-    if wlist:
+    if Waiting.objects.all().filter(person=pk):
+      wlist = Waiting.objects.get(person=pk)
       wlistSerializer = WaitingSerializer(wlist)
-    if Waiting.objects.all().filter(office=wlistSerializer.data['office']).count() > 1:
-      Waiting.objects.filter(office=wlistSerializer.data['office'],spot__gte=wlistSerializer.data['spot']).update(spot=F('spot')-1)
+      if Waiting.objects.all().filter(office=wlistSerializer.data['office']).count() > 1:
+        Waiting.objects.filter(office=wlistSerializer.data['office'],spot__gte=wlistSerializer.data['spot']).update(spot=F('spot')-1)
 
     
     person = self.get_object(pk)
