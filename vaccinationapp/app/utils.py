@@ -35,7 +35,7 @@ def SendEmailToFirstPersonInQueue(officeId,WaitingList):
   if WaitingList > 1 :
     WaitingTobeUpdated = Waiting.objects.filter(office=officeId,spot__gte=lowestSpot['spot__min']).update(spot=F('spot')-1)
   
-  html_content = '<p>Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare <a href="http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])+'">Accesati Programarea</p>'
+  html_content = '<p>Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare <a href="http://localhost:8080/office/'+str(persSerializier.data['id'])+'/'+ str(officeId)+'">\n Click aici pentru a vă programa!</p>'
   data = {}
   data['email_subject'] = 'Loc vaccinare disponibil'
   # data["email_body"] = ' Accesați linkul atașat în scopul programării în centrul ales la înscrierea în lista de așteptare \n http://localhost:8080/office/'+str(officeId)+'/'+ str(persSerializier.data['id'])

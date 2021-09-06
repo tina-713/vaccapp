@@ -33,7 +33,7 @@ class RegisterView(generics.GenericAPIView):
     UserToken.create_token(token=token,datetime=now,user=user_data['id'])
    
     absurl = 'http://localhost:8080/confirmation/'+str(UserToken)
-    email_body = ' Utilizați linkul de mai jos pentru a vă verifica adresa de email. \n' + absurl
+    email_body = 'Utilizați linkul pentru a verifica adresa de email. ' + absurl
     data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verifica-ți email-ul'}
   
     Util.send_email(data)
@@ -350,10 +350,6 @@ class PersonList(APIView):
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def post(self,request):
-    if request.data["cnp"]:
-       if Person.objects.all().filter(cnp=request.data["cnp"]).count():
-         return Response ({"error":"Persoana cu acest cnp exista deja in baza de date"}, status=status.HTTP_400_BAD_REQUEST)
-       
     serializer = PersonSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
