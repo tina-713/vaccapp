@@ -33,7 +33,7 @@ class RegisterView(generics.GenericAPIView):
     UserToken.create_token(token=token,datetime=now,user=user_data['id'])
    
     absurl = 'http://localhost:8080/confirmation/'+str(UserToken)
-    email_body = 'Utilizați linkul pentru a verifica adresa de email. ' + absurl
+    email_body = '<p>Utilizați linkul pentru a verifica adresa de email.\n</p>' + absurl
     data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verifica-ți email-ul'}
   
     Util.send_email(data)
@@ -450,19 +450,20 @@ class AppointmentDetails(APIView):
     waitingList = Waiting.objects.all().filter(office = ser.data['office']['id']).count()
     officeId = ser.data['office']['id']
     
+    if request.data['status'] == "anulata" and request.data['kind']=='prima doza':
+      #cancel rapel as well
+      apps = Appointment.objects.get(id=pk)
+      appSerializer = AppointmentSerializer(apps)
+      rapel = Appointment.objects.all().filter(person=appSerializer.data['person']['id'],kind="rapel",status="in curs").update(status="anulata")
+      if rapel:
+        Office.objects.all().filter(id=officeId).update(spots=F('spots')+1)
+
     if request.data['status'] == "finalizata" or request.data['status'] == "anulata":
       off = Office.objects.all().filter(id=ser.data['office']['id']).update(spots=F('spots')+1)
       office = Office.objects.get(id=officeId)
       officeSer = OfficeSerializer(office)
       if waitingList and officeSer.data['spots'] >= 2:
         SendEmailToFirstPersonInQueue(officeId,waitingList)
-    
-    if request.data['status'] == "anulata" and request.data['kind']=='prima doza':
-      #cancel rapel as well
-      apps = Appointment.objects.get(id=pk)
-      appSerializer = AppointmentSerializer(apps)
-      Appointment.objects.all().filter(person=appSerializer.data['person']['id'],kind="rapel",status="in curs").update(status="anulata")
-      Office.objects.all().filter(id=officeId).update(spots=F('spots')+1)
 
      
 
